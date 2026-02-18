@@ -41,7 +41,7 @@ echo "main directory created"
 echo "creating sub-directories and files"
 
 # Create Python attendance checker script
-cat > "$DIR/attendance_checker.py" <<- EOF
+cat > "$DIR/attendance_checker.py" << EOF
 import csv
 import json
 import os
@@ -74,7 +74,6 @@ def run_attendance_check():
             email = row['Email']
             attended = int(row['Attendance Count'])
             
-            # Simple Math: (Attended / Total) * 100
             attendance_pct = (attended / total_sessions) * 100
             
             message = ""
@@ -85,7 +84,7 @@ def run_attendance_check():
             
             if message:
                 if config['run_mode'] == "live":
-                    log.write(f"[{datetime.now()}] ALERT SENT TO {email}: {message}\\n")
+                    log.write(f"[{datetime.now()}] ALERT SENT TO {email}: {message}\n")
                     print(f"Logged alert for {name}")
                 else:
                     print(f"[DRY RUN] Email to {email}: {message}")
@@ -93,6 +92,7 @@ def run_attendance_check():
 if __name__ == "__main__":
     run_attendance_check()
 EOF
+
 
 
 # Create Helpers directory for assets and config files
