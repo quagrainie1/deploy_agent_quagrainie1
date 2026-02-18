@@ -41,7 +41,7 @@ echo "main directory created"
 echo "creating sub-directories and files"
 
 # Create Python attendance checker script
-cat > "$DIR/attendance_checker.py" << EOF
+cat > "$DIR/attendance_checker.py" <<- EOF
 import csv
 import json
 import os
