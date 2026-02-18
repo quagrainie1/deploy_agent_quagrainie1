@@ -86,7 +86,7 @@ def run_attendance_check():
                     print(f"[DRY RUN] Email to {email}: {message}")
 
 if __name__ == "__main__":
-    run_attendance_check()%                                   
+    run_attendance_check()                                   
 EOF
 
 # Create Helpers directory for assets and config files
