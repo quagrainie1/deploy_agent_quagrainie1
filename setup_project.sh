@@ -47,24 +47,20 @@ import json
 import os
 from datetime import datetime
 
-# Ensure paths work no matter where the script is run
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 HELPERS_DIR = os.path.join(BASE_DIR, 'Helpers')
 REPORTS_DIR = os.path.join(BASE_DIR, 'reports')
 
-
 def run_attendance_check():
     # 1. Load Config
     with open(os.path.join(HELPERS_DIR, 'config.json'), 'r') as f:
-    config = json.load(f)
+        config = json.load(f)
 
-    
     # 2. Archive old reports.log if it exists
     reports_log = os.path.join(REPORTS_DIR, 'reports.log')
-if os.path.exists(reports_log):
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    os.rename(reports_log, os.path.join(REPORTS_DIR, f'reports_{timestamp}.log.archive'))
-
+    if os.path.exists(reports_log):
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        os.rename(reports_log, os.path.join(REPORTS_DIR, f'reports_{timestamp}.log.archive'))
 
     # 3. Process Data
     with open(os.path.join(HELPERS_DIR, 'assets.csv'), mode='r') as f, open(reports_log, 'w') as log:
@@ -89,14 +85,15 @@ if os.path.exists(reports_log):
             
             if message:
                 if config['run_mode'] == "live":
-                    log.write(f"[{datetime.now()}] ALERT SENT TO {email}: {message}\n")
+                    log.write(f"[{datetime.now()}] ALERT SENT TO {email}: {message}\\n")
                     print(f"Logged alert for {name}")
                 else:
                     print(f"[DRY RUN] Email to {email}: {message}")
 
 if __name__ == "__main__":
-    run_attendance_check()                                   
+    run_attendance_check()
 EOF
+
 
 # Create Helpers directory for assets and config files
 mkdir -p "$DIR/Helpers"
