@@ -47,41 +47,46 @@ import json
 import os
 from datetime import datetime
 
+# --- Set absolute paths ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 HELPERS_DIR = os.path.join(BASE_DIR, 'Helpers')
 REPORTS_DIR = os.path.join(BASE_DIR, 'reports')
+CONFIG_FILE = os.path.join(HELPERS_DIR, 'config.json')
+ASSETS_FILE = os.path.join(HELPERS_DIR, 'assets.csv')
+REPORTS_LOG = os.path.join(REPORTS_DIR, 'reports.log')
+
 
 def run_attendance_check():
     # 1. Load Config
-    with open(os.path.join(HELPERS_DIR, 'config.json'), 'r') as f:
+    with open(CONFIG_FILE, 'r') as f:
         config = json.load(f)
 
     # 2. Archive old reports.log if it exists
-    reports_log = os.path.join(REPORTS_DIR, 'reports.log')
-    if os.path.exists(reports_log):
+    if os.path.exists(REPORTS_LOG):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        os.rename(reports_log, os.path.join(REPORTS_DIR, f'reports_{timestamp}.log.archive'))
+        archive_name = os.path.join(REPORTS_DIR, f'reports_{timestamp}.log.archive')
+        os.rename(REPORTS_LOG, archive_name)
 
     # 3. Process Data
-    with open(os.path.join(HELPERS_DIR, 'assets.csv'), mode='r') as f, open(reports_log, 'w') as log:
+    with open(ASSETS_FILE, mode='r') as f, open(REPORTS_LOG, 'w') as log:
         reader = csv.DictReader(f)
         total_sessions = config['total_sessions']
-        
+
         log.write(f"--- Attendance Report Run: {datetime.now()} ---\n")
-        
+
         for row in reader:
             name = row['Names']
             email = row['Email']
             attended = int(row['Attendance Count'])
-            
+
             attendance_pct = (attended / total_sessions) * 100
-            
+
             message = ""
             if attendance_pct < config['thresholds']['failure']:
                 message = f"URGENT: {name}, your attendance is {attendance_pct:.1f}%. You will fail this class."
             elif attendance_pct < config['thresholds']['warning']:
                 message = f"WARNING: {name}, your attendance is {attendance_pct:.1f}%. Please be careful."
-            
+
             if message:
                 if config['run_mode'] == "live":
                     log.write(f"[{datetime.now()}] ALERT SENT TO {email}: {message}\n")
@@ -89,9 +94,10 @@ def run_attendance_check():
                 else:
                     print(f"[DRY RUN] Email to {email}: {message}")
 
+
 if __name__ == "__main__":
     run_attendance_check()
-EOF
+
 
 
 
