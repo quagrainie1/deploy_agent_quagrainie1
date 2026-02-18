@@ -170,4 +170,4 @@ done
 sleep 0.5
 echo ""
 echo "dir structure below"
-tree ./$DIR
+tree "$DIR"
