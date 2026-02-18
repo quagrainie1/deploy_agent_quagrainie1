@@ -10,7 +10,8 @@ py3=$(python3 --version)
 
 echo "$py3"
 
-
+# Function to manage process if script is interrupted
+# Archives the main directory and cleans up
 process_management() {
 	echo -e "\n...............Process management initiated..............."
 	if [ -d "$DIR" ]; then
@@ -23,14 +24,14 @@ process_management() {
 }
 trap 'process_management' SIGINT
 
-
+# Prompt user for input to name the main directory
 echo ""
 read -p "Input for directory creation: " INPUT
 while [ -z "$INPUT" ]; do
 	read -p "Please enter a text to create the parent directory: " INPUT
 done
 
-
+# Create main directory
 DIR="attendance_tracker_$INPUT"
 mkdir -p "$DIR"
 sleep 0.3
@@ -39,6 +40,7 @@ echo "main directory created"
 
 echo "creating sub-directories and files"
 
+# Create Python attendance checker script
 cat > "$DIR/attendance_checker.py" << EOF
 import csv
 import json
@@ -87,11 +89,11 @@ if __name__ == "__main__":
     run_attendance_check()%                                   
 EOF
 
-
+# Create Helpers directory for assets and config files
 mkdir -p "$DIR/Helpers"
 echo "Helpers directory created"
 
-
+# Create assets.csv with sample student attendance data
 cat > "$DIR/Helpers/assets.csv" << EOF
 Email,Names,Attendance Count,Absence Count
 alice@example.com,Alice Johnson,14,1
@@ -103,11 +105,12 @@ EOF
 sleep 0.5
 echo "$DIR/Helpers/assets.csv created"
 
-
+# Create reports directory
 mkdir -p "$DIR/reports"
 
 echo "reports directory created"
 
+# Create initial reports.log with example alerts
 cat > "$DIR/reports/reports.log" << EOF
 --- Attendance Report Run: 2026-02-06 18:10:01.468726 ---
 [2026-02-06 18:10:01.469363] ALERT SENT TO bob@example.com: URGENT: Bob Smith, your attendance is 46.7%. You will fail this class.
@@ -117,6 +120,7 @@ EOF
 sleep 0.5
 echo "$DIR/reports/reports.log created sucessfully"
 
+# Create config.json with default attendance thresholds and total sessions
 cat > $DIR/Helpers/config.json <<EOF
 	{
     	"thresholds": {
@@ -130,7 +134,7 @@ EOF
 
 echo "config.json created"
 
-
+# Prompt user to optionally update attendance thresholds
 while true; do
 	read -p "Update attendance thresholds? y/n: " update
 
@@ -153,7 +157,7 @@ while true; do
 done
 
 
-
+# Display the directory structure of the newly created attendance tracker
 sleep 0.5
 echo ""
 echo "dir structure below"
