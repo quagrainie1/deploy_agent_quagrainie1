@@ -1,43 +1,46 @@
-#!/bin/bash 
+#!/bin/bash
 
 echo "----------------------------------"
 echo "ATTENDANCE TRACKER"
 echo "----------------------------------"
 
-# Check python3 version
+# Check Python3 version
 py3=$(python3 --version)
 echo "$py3"
 
 # Function to manage process if script is interrupted
-# Archives the main directory and cleans up
 process_management() {
     echo -e "\n...............Process management initiated..............."
     if [ -d "$DIR" ]; then
-        tar -czf attendance_tracker_${INPUT}_archive.tgz "$DIR"
+        tar -czf "${DIR}_archive.tgz" "$DIR"
         rm -rf "$DIR"
     fi
-    echo "Process archived into attendance_tracker_${INPUT}_archive.tgz"
+    echo "Process archived into ${DIR}_archive.tgz"
     echo "................................................................."
     exit 1
 }
 trap 'process_management' SIGINT
 
-# Prompt user for input to name the main directory
+# Prompt user for main directory name
 echo ""
 read -p "Input for directory creation: " INPUT
 while [ -z "$INPUT" ]; do
-    read -p "Please enter a text to create the parent directory: " INPUT
+    read -p "Please enter a name for the parent directory: " INPUT
 done
 
-# Create main directory and subdirectories
+# Main directory
 DIR="attendance_tracker_$INPUT"
-mkdir -p "$DIR/Helpers"
-mkdir -p "$DIR/reports"
+mkdir -p "$DIR"
 sleep 0.3
 echo ""
-echo "main directory created"
+echo "Main directory created"
+
+# Create sub-directories
+mkdir -p "$DIR/Helpers"
+mkdir -p "$DIR/reports"
 echo "Helpers and reports directories created"
-echo "creating files..."
+
+echo "Creating files..."
 
 # Create Python attendance checker script
 cat > "$DIR/attendance_checker.py" << EOF
@@ -46,7 +49,6 @@ import json
 import os
 from datetime import datetime
 
-# Paths relative to this script
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 HELPERS_DIR = os.path.join(BASE_DIR, 'Helpers')
 REPORTS_DIR = os.path.join(BASE_DIR, 'reports')
@@ -72,13 +74,11 @@ def run_attendance_check():
             email = row['Email']
             attended = int(row['Attendance Count'])
             attendance_pct = (attended / total_sessions) * 100
-
             message = ""
             if attendance_pct < config['thresholds']['failure']:
                 message = f"URGENT: {name}, your attendance is {attendance_pct:.1f}%. You will fail this class."
             elif attendance_pct < config['thresholds']['warning']:
                 message = f"WARNING: {name}, your attendance is {attendance_pct:.1f}%. Please be careful."
-
             if message:
                 if config['run_mode'] == "live":
                     log.write(f"[{datetime.now()}] ALERT SENT TO {email}: {message}\n")
@@ -90,7 +90,7 @@ if __name__ == "__main__":
     run_attendance_check()
 EOF
 
-# Create assets.csv with sample student attendance data
+# Create sample assets.csv
 cat > "$DIR/Helpers/assets.csv" << EOF
 Email,Names,Attendance Count,Absence Count
 alice@example.com,Alice Johnson,14,1
@@ -98,9 +98,8 @@ bob@example.com,Bob Smith,7,8
 charlie@example.com,Charlie Davis,4,11
 diana@example.com,Diana Prince,15,0
 EOF
-echo "assets.csv created"
 
-# Create config.json with default attendance thresholds and total sessions
+# Create config.json
 cat > "$DIR/Helpers/config.json" << EOF
 {
     "thresholds": {
@@ -111,23 +110,25 @@ cat > "$DIR/Helpers/config.json" << EOF
     "total_sessions": 15
 }
 EOF
-echo "config.json created"
 
 # Create initial reports.log
 cat > "$DIR/reports/reports.log" << EOF
---- Attendance Report Run ---
+--- Attendance Report Run: 2026-02-06 18:10:01 ---
+[2026-02-06 18:10:01] ALERT SENT TO bob@example.com: URGENT: Bob Smith, your attendance is 46.7%. You will fail this class.
+[2026-02-06 18:10:01] ALERT SENT TO charlie@example.com: URGENT: Charlie Davis, your attendance is 26.7%. You will fail this class.
 EOF
-echo "reports.log created"
 
-# Prompt user to optionally update attendance thresholds
+echo "Files created successfully"
+
+# Optionally update thresholds
 while true; do
     read -p "Update attendance thresholds? y/n: " update
     if [ "$update" = "y" ]; then
         read -p "Enter warning threshold (default 75): " warning_th
+        sed -i "" "s/\"warning\": [0-9]*/\"warning\": $warning_th/" "$DIR/Helpers/config.json"
         read -p "Enter failure threshold (default 50): " failure_th
-        sed -i "" "s/\"warning\": [0-9]*/\"warning\": ${warning_th:-75}/" "$DIR/Helpers/config.json"
-        sed -i "" "s/\"failure\": [0-9]*/\"failure\": ${failure_th:-50}/" "$DIR/Helpers/config.json"
-        echo "UPDATED thresholds"
+        sed -i "" "s/\"failure\": [0-9]*/\"failure\": $failure_th/" "$DIR/Helpers/config.json"
+        echo "Thresholds UPDATED"
         break
     elif [ "$update" = "n" ]; then
         echo "Thresholds remain the same"
@@ -137,9 +138,8 @@ while true; do
     fi
 done
 
-# Display the directory structure of the newly created attendance tracker
-sleep 0.5
+# Display directory structure using tree
 echo ""
-echo "dir structure below"
+echo "Directory structure:"
 tree -F "$DIR"
 
