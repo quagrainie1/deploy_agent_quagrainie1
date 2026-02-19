@@ -9,7 +9,6 @@ py3=$(python3 --version)
 echo "$py3"
 
 # Function to manage process if script is interrupted
-# Archives the main directory and cleans up
 process_management() {
     echo -e "\n...............Process management initiated..............."
     if [ -d "$DIR" ]; then
@@ -84,7 +83,8 @@ def run_attendance_check():
             elif attendance_pct < config['thresholds']['warning']:
                 message = f"WARNING: {name}, your attendance is {attendance_pct:.1f}%. Please be careful."
 
-                       if message:
+            # Correctly indented alert logging
+            if message:
                 if config['run_mode'] == "live":
                     alert_line = f"[{datetime.now()}] ALERT SENT TO {email}: {message}"
                     log.write(alert_line + "\n")
@@ -143,7 +143,7 @@ while true; do
     fi
 done
 
-# Display directory structure: attendance_checker.py first
+# Display directory structure
 sleep 0.5
 echo ""
 echo "dir structure below"
