@@ -22,14 +22,19 @@ attendance_tracker_<name>/
     
 How to Set Up
 
-Make the setup script executable (if it isn’t already):
+1. Make the setup script executable (if it isn’t already): 
+
 chmod +x setup_project.sh
-Run the script to create your attendance tracker:
+
+2. Run the script to create your attendance tracker: 
+
 ./setup_project.sh
-Run the attendance checker:
+
+3. Run the attendance checker:
+
 python3 attendance_tracker_(name)/attendance_checker.py
 
-Old reports will be archived in the reports/ folder automatically.
+* Old reports will be archived in the reports/ folder automatically.
 
 How It Works
 
