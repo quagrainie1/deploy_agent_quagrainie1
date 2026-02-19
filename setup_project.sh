@@ -84,13 +84,13 @@ def run_attendance_check():
             elif attendance_pct < config['thresholds']['warning']:
                 message = f"WARNING: {name}, your attendance is {attendance_pct:.1f}%. Please be careful."
 
-            if message:
-    if config['run_mode'] == "live":
-        alert_line = f"[{datetime.now()}] ALERT SENT TO {email}: {message}"
-        log.write(alert_line + "\n")
-        print(alert_line)
-    else:
-        print(f"[DRY RUN] Email to {email}: {message}")
+                       if message:
+                if config['run_mode'] == "live":
+                    alert_line = f"[{datetime.now()}] ALERT SENT TO {email}: {message}"
+                    log.write(alert_line + "\n")
+                    print(alert_line)
+                else:
+                    print(f"[DRY RUN] Email to {email}: {message}")
 
 if __name__ == "__main__":
     run_attendance_check()
