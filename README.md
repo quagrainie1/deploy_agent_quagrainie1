@@ -50,4 +50,10 @@ You can choose to adjust warning/failure thresholds during setup.
 
 Author
 
-Created by Eric Quagrainie, a student exploring Python automation and scripting projects.
+Created by Eric Quagrainie, for Python automation and scripting project.
+
+
+## 🎥 Project Video Demonstration
+Watch the explanation here:
+https://drive.google.com/file/d/14Wd80DN8jbVioYCadJqODked4-Ykgh4s/view?usp=drivesdk
+
