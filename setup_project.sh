@@ -1,49 +1,49 @@
-#!/bin/bash
+#!/bin/bash 
 
 echo "----------------------------------"
 echo "ATTENDANCE TRACKER"
 echo "----------------------------------"
 
-# Check Python3 version
+# Check python3 version
 py3=$(python3 --version)
 echo "$py3"
 
 # Function to manage process if script is interrupted
+# Archives the main directory and cleans up
 process_management() {
     echo -e "\n...............Process management initiated..............."
     if [ -d "$DIR" ]; then
-        tar -czf "${DIR}_archive.tgz" "$DIR"
+        tar -czf attendance_tracker_${INPUT}_archive.tgz "$DIR"
         rm -rf "$DIR"
     fi
-    echo "Process archived into ${DIR}_archive.tgz"
+    echo "Process archived into attendance_tracker_${INPUT}_archive.tgz"
     echo "................................................................."
     exit 1
 }
 trap 'process_management' SIGINT
 
-# Prompt user for main directory name
+# Prompt user for input to name the main directory
 echo ""
 read -p "Input for directory creation: " INPUT
 while [ -z "$INPUT" ]; do
-    read -p "Please enter a name for the parent directory: " INPUT
+    read -p "Please enter a text to create the parent directory: " INPUT
 done
 
-# Main directory
+# Create main directory
 DIR="attendance_tracker_$INPUT"
 mkdir -p "$DIR"
 sleep 0.3
 echo ""
-echo "Main directory created"
+echo "main directory created"
+echo "creating sub-directories and files"
 
-# Create sub-directories
+# Create Helpers and reports directories
 mkdir -p "$DIR/Helpers"
 mkdir -p "$DIR/reports"
 echo "Helpers and reports directories created"
 
-echo "Creating files..."
-
 # Create Python attendance checker script
-cat > "$DIR/attendance_checker.py" << EOF
+cat > "$DIR/attendance_checker.py" << 'EOF'
 import csv
 import json
 import os
@@ -68,17 +68,22 @@ def run_attendance_check():
     with open(os.path.join(HELPERS_DIR, 'assets.csv'), mode='r') as f, open(reports_log, 'w') as log:
         reader = csv.DictReader(f)
         total_sessions = config['total_sessions']
+
         log.write(f"--- Attendance Report Run: {datetime.now()} ---\n")
+
         for row in reader:
             name = row['Names']
             email = row['Email']
             attended = int(row['Attendance Count'])
+
             attendance_pct = (attended / total_sessions) * 100
+
             message = ""
             if attendance_pct < config['thresholds']['failure']:
                 message = f"URGENT: {name}, your attendance is {attendance_pct:.1f}%. You will fail this class."
             elif attendance_pct < config['thresholds']['warning']:
                 message = f"WARNING: {name}, your attendance is {attendance_pct:.1f}%. Please be careful."
+
             if message:
                 if config['run_mode'] == "live":
                     log.write(f"[{datetime.now()}] ALERT SENT TO {email}: {message}\n")
@@ -90,7 +95,7 @@ if __name__ == "__main__":
     run_attendance_check()
 EOF
 
-# Create sample assets.csv
+# Create assets.csv with sample student attendance data
 cat > "$DIR/Helpers/assets.csv" << EOF
 Email,Names,Attendance Count,Absence Count
 alice@example.com,Alice Johnson,14,1
@@ -98,6 +103,7 @@ bob@example.com,Bob Smith,7,8
 charlie@example.com,Charlie Davis,4,11
 diana@example.com,Diana Prince,15,0
 EOF
+echo "assets.csv created"
 
 # Create config.json
 cat > "$DIR/Helpers/config.json" << EOF
@@ -110,25 +116,23 @@ cat > "$DIR/Helpers/config.json" << EOF
     "total_sessions": 15
 }
 EOF
+echo "config.json created"
 
 # Create initial reports.log
 cat > "$DIR/reports/reports.log" << EOF
---- Attendance Report Run: 2026-02-06 18:10:01 ---
-[2026-02-06 18:10:01] ALERT SENT TO bob@example.com: URGENT: Bob Smith, your attendance is 46.7%. You will fail this class.
-[2026-02-06 18:10:01] ALERT SENT TO charlie@example.com: URGENT: Charlie Davis, your attendance is 26.7%. You will fail this class.
+--- Attendance Report Run: $(date) ---
 EOF
+echo "reports.log created"
 
-echo "Files created successfully"
-
-# Optionally update thresholds
+# Prompt user to optionally update thresholds
 while true; do
     read -p "Update attendance thresholds? y/n: " update
     if [ "$update" = "y" ]; then
         read -p "Enter warning threshold (default 75): " warning_th
-        sed -i "" "s/\"warning\": [0-9]*/\"warning\": $warning_th/" "$DIR/Helpers/config.json"
+        sed -i "" "s/\"warning\": [0-9]*/\"warning\": ${warning_th:-75}/" "$DIR/Helpers/config.json"
         read -p "Enter failure threshold (default 50): " failure_th
-        sed -i "" "s/\"failure\": [0-9]*/\"failure\": $failure_th/" "$DIR/Helpers/config.json"
-        echo "Thresholds UPDATED"
+        sed -i "" "s/\"failure\": [0-9]*/\"failure\": ${failure_th:-50}/" "$DIR/Helpers/config.json"
+        echo "UPDATED thresholds"
         break
     elif [ "$update" = "n" ]; then
         echo "Thresholds remain the same"
@@ -138,8 +142,20 @@ while true; do
     fi
 done
 
-# Display directory structure using tree
+# Display directory structure: attendance_checker.py first
+sleep 0.5
 echo ""
-echo "Directory structure:"
-tree -F "$DIR"
+echo "dir structure below"
 
+echo "$DIR/"
+echo "├── attendance_checker.py"
+
+echo "├── Helpers/"
+for f in "$DIR/Helpers/"*; do
+    echo "│   ├── $(basename "$f")"
+done
+
+echo "└── reports/"
+for f in "$DIR/reports/"*; do
+    echo "    └── $(basename "$f")"
+done
