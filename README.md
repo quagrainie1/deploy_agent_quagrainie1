@@ -27,7 +27,7 @@ chmod +x setup_project.sh
 Run the script to create your attendance tracker:
 ./setup_project.sh
 Run the attendance checker:
-python3 attendance_tracker_ <name> /attendance_checker.py
+python3 attendance_tracker_(name)/attendance_checker.py
 
 Old reports will be archived in the reports/ folder automatically.
 
