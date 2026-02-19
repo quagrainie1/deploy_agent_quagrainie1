@@ -1,127 +1,47 @@
 # Attendance Tracker Project Factory
 
-This project is my shell scripting assignment where I created a script that automatically sets up a Student Attendance Tracker project. Instead of manually creating folders and files one by one, the script does everything at once. It also handles mistakes like stopping the script halfway so the workspace doesn’t get messy.
+This project helps you automatically track student attendance and log alerts for low attendance.
 
-The goal was to practice automation (Infrastructure as Code) and make setup faster and safer.
+What It Does
 
+Prompts for your name and creates a folder like attendance_tracker_<name>.
+Sets up subfolders: Helpers/ for assets.csv and config.json, and reports/ for logs.
+Generates attendance_checker.py, sample assets.csv, config.json, and reports.log.
+Archives old reports automatically whenever the script runs.
+Sends warnings if a student’s attendance falls below the set thresholds.
 
-## What the Script Does
+Folder Layout
 
-* Asks the user for a name to create a project folder
-* Builds the full folder structure automatically
-* Creates all required files (python file, csv data, json config, and log file)
-* Checks if **python3** exists on the machine
-* Lets the user change attendance warning and failure percentages
-* Uses `sed` to update values inside the config.json file
-* Handles **Ctrl + C interruption** using trap
-* Archives unfinished work and removes the broken directory
-
-
-## Directory Structure Created
-
-attendance_tracker_input/
+attendance_tracker_<name>/
 ├── attendance_checker.py
 ├── Helpers/
 │   ├── assets.csv
 │   └── config.json
 └── reports/
-└── reports.log
+    └── reports.log
+    
+How to Set Up
 
-Example if the user enters `class1`:
-
-attendance_tracker_class1/
-
-
-## How to Run
-
-Make the script executable:
-
-```bash
+Make the setup script executable (if it isn’t already):
 chmod +x setup_project.sh
-```
-
-Run the script:
-
-```bash
+Run the script to create your attendance tracker:
 ./setup_project.sh
-```
+Run the attendance checker:
+python3 attendance_tracker_<name>/attendance_checker.py
+Old reports will be archived in the reports/ folder automatically.
 
-You will be asked:
+How It Works
 
-```
-Input for directory creation:
-```
+setup_project.sh builds the folder, subfolders, and files you need.
+attendance_checker.py reads attendance data from assets.csv and thresholds from config.json.
+Alerts are logged to reports/reports.log or printed if running in dry-run mode.
 
-Enter any name and the folder will be created automatically.
+Tips
 
+Make sure Python 3 is installed.
+Update assets.csv whenever attendance changes.
+You can choose to adjust warning/failure thresholds during setup.
 
-## Updating Thresholds
+Author
 
-The script will ask:
-
-```
-Update attendance thresholds? y/n
-```
-
-If you type **y**, you can change:
-
-* Warning percentage (default 75)
-* Failure percentage (default 50)
-
-The script edits the `config.json` file directly using `sed`.
-
-
-## Interrupt / Archive Feature
-
-If you press:
-
-```
-CTRL + C
-```
-
-The script will:
-
-1. Stop execution
-2. Compress the current folder into:
-
-```
-attendance_tracker_input_archive.tgz
-```
-
-3. Delete the incomplete folder
-
-This keeps the workspace clean and avoids half-created projects.
-
-
-## Python Health Check
-
-The script runs:
-
-```bash
-python3 --version
-```
-
-If python3 exists, it prints the version. If not, the user will notice it’s missing.
-
-
-## What the Python Program Does
-
-`attendance_checker.py`:
-
-* Reads attendance data from `assets.csv`
-* Uses settings from `config.json`
-* Calculates attendance percentage
-* Writes warnings into `reports.log`
-
-
-## Notes
-
-* Run the script in a writable directory
-* Archive only happens if the script is interrupted
-* The `tree` command is used at the end to show the folder structure
-
-
-## Author
-
-Eric Quagrainie
-Student project for practicing shell scripting and automation.
+Created by Eric Quagrainie, a student exploring Python automation and scripting projects.
