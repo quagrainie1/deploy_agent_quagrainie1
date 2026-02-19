@@ -141,5 +141,5 @@ done
 sleep 0.5
 echo ""
 echo "dir structure below"
-# -F adds trailing / for directories, * for executables
-ls -R -F "$DIR"
+tree -F "$DIR"
+
