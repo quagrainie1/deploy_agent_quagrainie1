@@ -1,4 +1,4 @@
-# Attendance Tracker Project Factory
+# Attendance Tracker 
 
 This project helps you automatically track student attendance and log alerts for low attendance.
 
