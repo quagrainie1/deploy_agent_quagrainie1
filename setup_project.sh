@@ -137,8 +137,9 @@ while true; do
     fi
 done
 
-# Display the directory structure
+# Display the directory structure of the newly created attendance tracker
 sleep 0.5
 echo ""
 echo "dir structure below"
-tree "$DIR"
+# -F adds trailing / for directories, * for executables
+ls -R -F "$DIR"
